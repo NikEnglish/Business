@@ -39,18 +39,40 @@ body {
   background: linear-gradient(45deg, #ff512f, #dd2476);
   color: white;
   border: none;
-  padding: 15px 30px;
+  padding: 20px 40px;
   font-size: 1.2em;
   border-radius: 50px;
   cursor: pointer;
-  margin: 15px 0;
+  margin: 20px 0;
   box-shadow: 0 5px 15px rgba(255, 82, 82, 0.2);
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: width 0.4s, height 0.4s, top 0.4s, left 0.4s;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.main-button:hover::before {
+  width: 0;
+  height: 0;
+  top: 50%;
+  left: 50%;
 }
 
 .main-button:hover {
   transform: scale(1.1);
-  box-shadow: 0 10px 20px rgba(255, 82, 82, 0.4);
+  box-shadow: 0 10px 20px rgba(255, 82, 82, 0.5);
 }
 
 /* Кнопка улучшения */
@@ -58,17 +80,22 @@ body {
   background: #2196f3;
   color: white;
   border: none;
-  padding: 10px 20px;
-  font-size: 1em;
+  padding: 15px 25px;
+  font-size: 1.1em;
   border-radius: 20px;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 255, 0.2);
   transition: all 0.2s ease;
 }
 
 .upgrade button:hover {
   background: #1976d2;
   transform: translateY(-2px);
+}
+
+.upgrade button:active {
+  transform: translateY(2px);
 }
 
 /* Вкладки */
@@ -78,8 +105,11 @@ body {
   display: flex;
   justify-content: space-around;
   width: 100%;
-  background: linear-gradient(45deg, #6a11cb, #2575fc);
-  padding: 10px 0;
+  background: #6a11cb;
+  padding: 15px 0;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
 }
 
 .tab {
@@ -87,10 +117,10 @@ body {
   text-align: center;
   background: transparent;
   border: none;
-  font-size: 1em;
+  font-size: 1.1em;
   color: white;
   font-weight: bold;
-  padding: 10px 0;
+  padding: 15px 0;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -102,4 +132,29 @@ body {
 .tab:focus {
   outline: none;
   background: rgba(255, 255, 255, 0.3);
+}
+
+.tab i {
+  margin-right: 8px;
+}
+
+/* Плавные эффекты для вкладок */
+.tab:nth-child(1):hover {
+  background: linear-gradient(to right, #ff512f, #dd2476);
+}
+
+.tab:nth-child(2):hover {
+  background: linear-gradient(to right, #2196f3, #1976d2);
+}
+
+.tab:nth-child(3):hover {
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+}
+
+.tab:nth-child(4):hover {
+  background: linear-gradient(to right, #ff9a9e, #fad0c4);
+}
+
+.tab:nth-child(5):hover {
+  background: linear-gradient(to right, #feb47b, #ff7e5f);
 }
