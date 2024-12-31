@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,6 +117,7 @@
       box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
       border-top-left-radius: 25px;
       border-top-right-radius: 25px;
+      transition: all 0.3s ease-in-out;
     }
 
     .tab {
@@ -130,10 +131,12 @@
       padding: 15px 0;
       cursor: pointer;
       transition: all 0.2s ease;
+      border-radius: 12px;
     }
 
     .tab:hover {
       background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
     }
 
     .tab:focus {
@@ -145,25 +148,18 @@
       margin-right: 8px;
     }
 
+    .tab-active {
+      background: #ff9a9e;
+      border-radius: 12px;
+    }
+
     /* Плавные эффекты для вкладок */
-    .tab:nth-child(1):hover {
-      background: linear-gradient(to right, #ff512f, #dd2476);
-    }
-
-    .tab:nth-child(2):hover {
-      background: linear-gradient(to right, #2196f3, #1976d2);
-    }
-
-    .tab:nth-child(3):hover {
-      background: linear-gradient(to right, #6a11cb, #2575fc);
-    }
-
-    .tab:nth-child(4):hover {
-      background: linear-gradient(to right, #ff9a9e, #fad0c4);
-    }
-
-    .tab:nth-child(5):hover {
-      background: linear-gradient(to right, #feb47b, #ff7e5f);
+    .tab:nth-child(1):active,
+    .tab:nth-child(2):active,
+    .tab:nth-child(3):active,
+    .tab:nth-child(4):active,
+    .tab:nth-child(5):active {
+      transform: translateY(-2px);
     }
   </style>
 </head>
@@ -187,52 +183,23 @@
 
   <!-- Вкладки -->
   <div class="tabs">
-    <button class="tab" data-page="clicker">
+    <button class="tab tab-active" data-page="clicker" id="tab-clicker">
       <i class="fas fa-mouse"></i> Кликер
     </button>
-    <button class="tab" data-page="profile">
+    <button class="tab" data-page="profile" id="tab-profile">
       <i class="fas fa-user"></i> Профиль
     </button>
-    <button class="tab" data-page="store">
+    <button class="tab" data-page="store" id="tab-store">
       <i class="fas fa-store"></i> Магазин
     </button>
-    <button class="tab" data-page="investments">
+    <button class="tab" data-page="investments" id="tab-investments">
       <i class="fas fa-chart-line"></i> Инвестиции
     </button>
-    <button class="tab" data-page="business">
+    <button class="tab" data-page="business" id="tab-business">
       <i class="fas fa-briefcase"></i> Бизнес
     </button>
   </div>
 
-  <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-  <script>
-    // Задачи и логика для кнопок
-    let money = 0;
-    let clickValue = 1;
-    let upgradeCost = 10;
-
-    // Обновление экрана
-    const moneyDisplay = document.getElementById('money');
-    const clickButton = document.getElementById('click-button');
-    const upgradeButton = document.getElementById('upgrade-button');
-    const upgradeDisplay = document.getElementById('upgrade-level');
-    const upgradeCostDisplay = document.getElementById('upgrade-cost');
-
-    clickButton.addEventListener('click', () => {
-      money += clickValue;
-      moneyDisplay.textContent = money + " ₽";
-    });
-
-    upgradeButton.addEventListener('click', () => {
-      if (money >= upgradeCost) {
-        money -= upgradeCost;
-        clickValue *= 2;
-        upgradeCost = Math.floor(upgradeCost * 1.5);
-        moneyDisplay.textContent = money + " ₽";
-        upgradeDisplay.textContent = clickValue + " ₽ за клик";
-        upgradeCostDisplay.textContent = upgradeCost + " ₽";
-      }
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
-      </html>
+</html>
