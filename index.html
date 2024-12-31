@@ -1,205 +1,147 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clicker Game</title>
-  <style>
-    /* Общий стиль */
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инвестиционный кликер</title>
+    
+    <style>
+        /* Основной стиль страницы */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f9;
+            color: #333;
+        }
 
-    /* Контейнер */
-    .container {
-      background: #ffffffdd;
-      margin-top: 20px;
-      border-radius: 15px;
-      padding: 20px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
+        /* Контейнер для всей страницы */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
 
-    /* Карточка */
-    .card {
-      background: linear-gradient(45deg, #6a11cb, #2575fc);
-      color: white;
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 15px;
-      font-size: 1.5em;
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
+        /* Нижняя панель с плавными переходами */
+        .bottom-menu {
+            display: flex;
+            justify-content: space-around;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #333;
+            padding: 10px 0;
+            border-radius: 15px 15px 0 0;
+            transition: all 0.3s ease-in-out;
+            z-index: 10;
+        }
 
-    /* Основная кнопка */
-    .main-button {
-      background: linear-gradient(45deg, #ff512f, #dd2476);
-      color: white;
-      border: none;
-      padding: 20px 40px;
-      font-size: 1.2em;
-      border-radius: 50px;
-      cursor: pointer;
-      margin: 20px 0;
-      box-shadow: 0 5px 15px rgba(255, 82, 82, 0.2);
-      transition: all 0.3s ease-in-out;
-      position: relative;
-      overflow: hidden;
-    }
+        .bottom-menu button {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 60px;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
 
-    .main-button::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 300%;
-      height: 300%;
-      background: rgba(255, 255, 255, 0.2);
-      transition: width 0.4s, height 0.4s, top 0.4s, left 0.4s;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
+        .bottom-menu button.active {
+            background-color: #00bfff;
+        }
 
-    .main-button:hover::before {
-      width: 0;
-      height: 0;
-      top: 50%;
-      left: 50%;
-    }
+        /* Контентная область, доступная для разных вкладок */
+        .content {
+            display: none;
+            padding: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 60px;
+        }
 
-    .main-button:hover {
-      transform: scale(1.1);
-      box-shadow: 0 10px 20px rgba(255, 82, 82, 0.5);
-    }
+        .content.active {
+            display: block;
+        }
 
-    /* Кнопка улучшения */
-    .upgrade button {
-      background: #2196f3;
-      color: white;
-      border: none;
-      padding: 15px 25px;
-      font-size: 1.1em;
-      border-radius: 20px;
-      cursor: pointer;
-      margin-top: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 255, 0.2);
-      transition: all 0.2s ease;
-    }
+        /* Стиль кнопки внизу страницы */
+        .content button {
+            padding: 10px;
+            background: #00bfff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+        }
 
-    .upgrade button:hover {
-      background: #1976d2;
-      transform: translateY(-2px);
-    }
+        /* Мобильная адаптация */
+        @media screen and (max-width: 600px) {
+            .bottom-menu {
+                flex-direction: column;
+                border-radius: 0 0 15px 15px;
+            }
 
-    .upgrade button:active {
-      transform: translateY(2px);
-    }
+            .bottom-menu button {
+                margin: 5px 0;
+                width: 80%;
+                font-size: 14px;
+            }
 
-    /* Вкладки */
-    .tabs {
-      position: fixed;
-      bottom: 0;
-      display: flex;
-      justify-content: space-around;
-      width: 100%;
-      background: #6a11cb;
-      padding: 15px 0;
-      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
-      border-top-left-radius: 25px;
-      border-top-right-radius: 25px;
-      transition: all 0.3s ease-in-out;
-    }
+            .content {
+                padding: 10px;
+            }
+        }
+    </style>
 
-    .tab {
-      flex: 1;
-      text-align: center;
-      background: transparent;
-      border: none;
-      font-size: 1.1em;
-      color: white;
-      font-weight: bold;
-      padding: 15px 0;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border-radius: 12px;
-    }
-
-    .tab:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-3px);
-    }
-
-    .tab:focus {
-      outline: none;
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    .tab i {
-      margin-right: 8px;
-    }
-
-    .tab-active {
-      background: #ff9a9e;
-      border-radius: 12px;
-    }
-
-    /* Плавные эффекты для вкладок */
-    .tab:nth-child(1):active,
-    .tab:nth-child(2):active,
-    .tab:nth-child(3):active,
-    .tab:nth-child(4):active,
-    .tab:nth-child(5):active {
-      transform: translateY(-2px);
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Заголовок карты -->
-    <div class="card">
-      <h2>Кликер денег</h2>
-      <p id="money">0 ₽</p>
+
+<div class="container">
+
+    <!-- Вкладки с контентом -->
+    <div id="clicker" class="content active">
+        <h2>Кликер</h2>
+        <p>Заработано: <span id="money">0</span> монет</p>
+        <button id="click-button">Кликнуть</button>
     </div>
 
-    <!-- Кнопка клика -->
-    <button id="click-button" class="main-button">Заработать деньги</button>
-
-    <!-- Прокачка -->
-    <div class="upgrade">
-      <p>Улучшение: <span id="upgrade-level">1 ₽ за клик</span></p>
-      <button id="upgrade-button">Улучшить за <span id="upgrade-cost">10 ₽</span></button>
+    <div id="profile" class="content">
+        <h2>Профиль</h2>
+        <p>Заработано: 0 монет</p>
+        <p>Профиль: {{ username }}</p>
     </div>
-  </div>
 
-  <!-- Вкладки -->
-  <div class="tabs">
-    <button class="tab tab-active" data-page="clicker" id="tab-clicker">
-      <i class="fas fa-mouse"></i> Кликер
-    </button>
-    <button class="tab" data-page="profile" id="tab-profile">
-      <i class="fas fa-user"></i> Профиль
-    </button>
-    <button class="tab" data-page="store" id="tab-store">
-      <i class="fas fa-store"></i> Магазин
-    </button>
-    <button class="tab" data-page="investments" id="tab-investments">
-      <i class="fas fa-chart-line"></i> Инвестиции
-    </button>
-    <button class="tab" data-page="business" id="tab-business">
-      <i class="fas fa-briefcase"></i> Бизнес
-    </button>
-  </div>
+    <div id="items" class="content">
+        <h2>Предметы</h2>
+        <p>Места для предметов!</p>
+    </div>
 
-  <script src="script.js"></script>
+    <div id="investments" class="content">
+        <h2>Инвестиции</h2>
+        <p>Акции, криптовалюта!</p>
+    </div>
+
+    <div id="businesses" class="content">
+        <h2>Бизнесы</h2>
+        <p>Твой бизнес тут</p>
+    </div>
+
+    <!-- Нижняя панель с вкладками -->
+    <div class="bottom-menu">
+        <button class="tab active" onclick="switchTab('clicker')">Кликер</button>
+        <button class="tab" onclick="switchTab('profile')">Профиль</button>
+        <button class="tab" onclick="switchTab('items')">Предметы</button>
+        <button class="tab" onclick="switchTab('investments')">Инвестиции</button>
+        <button class="tab" onclick="switchTab('businesses')">Бизнесы</button>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
