@@ -6,111 +6,185 @@
     <title>Инвестиционный кликер</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
             margin: 0;
             padding: 0;
-            background: #f4f4f9;
-            color: #333;
-            overflow-x: hidden;
-            transition: all 0.3s ease;
         }
 
         .container {
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
-            padding-bottom: 50px; /* Оставим место для нижней панели */
+            height: 100vh;
+            padding-bottom: 60px;
         }
 
         .content {
-            padding: 20px;
+            padding: 30px;
             flex-grow: 1;
             display: none;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: opacity 0.3s ease, transform 0.5s ease;
         }
 
         .content.active {
             display: block;
+            opacity: 1;
         }
 
-        /* Нижняя панель с вкладками */
         .bottom-menu {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             position: fixed;
             bottom: -80px;
             left: 0;
             width: 100%;
             background-color: #333;
-            padding: 15px 0;
+            padding: 10px 0;
             border-radius: 15px 15px 0 0;
-            transition: bottom 0.3s ease;
+            transition: bottom 0.5s ease;
             z-index: 10;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
         }
 
         .bottom-menu button {
-            background-color: #555;
-            color: white;
+            background-color: #444;
+            color: #fff;
             border: none;
             padding: 15px 25px;
             border-radius: 12px;
             font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
         .bottom-menu button:hover {
-            background-color: #00bfff;
+            background-color: #ff4500;
             transform: scale(1.1);
         }
 
         .bottom-menu button.active {
-            background-color: #00bfff;
+            background-color: #ff4500;
         }
 
-        #money, #profile-money {
-            font-size: 22px;
-            font-weight: bold;
-            color: #00bfff;
-            transition: transform 0.3s ease;
-        }
-
-        .item {
-            background: #e0e0e0;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: background 0.3s ease;
-        }
-
-        .item:hover {
-            background-color: #cce6ff;
-        }
-
-        .item button {
-            background-color: #4CAF50;
-            color: white;
+        .toggle-menu {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            background: #00bfff;
+            color: #fff;
             border: none;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 15px;
             cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .toggle-menu.open {
+            transform: rotate(180deg);
+        }
+
+        .section-header {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .item, .business {
+            background: #e9e9e9;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s;
         }
 
-        .item button:hover {
-            background-color: #45a049;
+        .item:hover, .business:hover {
+            background-color: #d1f7ff;
+        }
+
+        .buy-button, .invest-button, .business-button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .buy-button:hover, .invest-button:hover, .business-button:hover {
+            background: #45a049;
+        }
+
+        .buy-button:disabled {
+            background: #888;
+        }
+
+        #money {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00bfff;
         }
 
         #items-list {
             max-height: 400px;
             overflow-y: auto;
-            margin-top: 20px;
         }
+    </style>
+</head>
+<body>
 
-        @media screen and (max-width: 600px) {
+<div class="container">
+    <button class="toggle-menu" onclick="toggleMenu()">⏷</button>
+
+    <div id="clicker" class="content active">
+        <h2 class="section-header">Кликер</h2>
+        <p>Заработано: <span id="money">$0</span></p>
+        <button id="click-button">Кликнуть!</button>
+        <p>Уровень прокачки клика: <span id="click-upgrade">1</span></p>
+        <button id="upgrade-click">Прокачать клик (Цена: <span id="upgrade-cost">$50</span>)</button>
+    </div>
+
+    <div id="profile" class="content">
+        <h2 class="section-header">Профиль</h2>
+        <p>Заработано: <span id="profile-money">$0</span></p>
+        <p>Всего покупок: <span id="purchases-count">0</span></p>
+    </div>
+
+    <div id="items" class="content">
+        <h2 class="section-header">Предметы для покупки</h2>
+        <div id="items-list"></div>
+    </div>
+
+    <div id="investments" class="content">
+        <h2 class="section-header">Инвестиции</h2>
+        <div>
+            <label for="invest-input">Введите сумму для инвестиции:</label>
+            <input type="number" id="invest-input" />
+            <button id="invest-button" class="invest-button">Инвестировать</button>
+        </div>
+    </div>
+
+    <div id="businesses" class="content">
+        <h2 class="section-header">Бизнесы</h2>
+        <button id="start-business" class="business-button">Открыть новый бизнес</button>
+        <div id="business-list"></div>
+    </div>
+
+    <div class="bottom-menu">
+        <button class="tab active" onclick="switchTab('clicker')">Кликер</button>
+        <button class="tab" onclick="switchTab('profile')">Профиль</button>
+        <button class="tab" onclick="switchTab('items')">Предметы</button>
+        <button class="tab" onclick="switchTab('investments')">Инвестиции</button>
+        <button class="tab" onclick="switchTab('businesses')">Бизнесы</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>        @media screen and (max-width: 600px) {
             .bottom-menu {
                 flex-direction: column;
                 padding: 10px 0;
