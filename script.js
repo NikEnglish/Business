@@ -1,46 +1,46 @@
-// Начальная логика для кликов
 let money = 0;
-let clickValue = 1;
+let moneyPerClick = 1;
 let upgradeCost = 10;
+let upgradeLevel = 1;
 
-// DOM-элементы
-const moneyDisplay = document.getElementById("money");
-const clickButton = document.getElementById("click-button");
-const upgradeButton = document.getElementById("upgrade-button");
-const upgradeLevel = document.getElementById("upgrade-level");
-const upgradeCostDisplay = document.getElementById("upgrade-cost");
+// Функция для обновления отображения денег
+function updateMoneyDisplay() {
+  document.getElementById('money').textContent = `${money} ₽`;
+}
 
-// Клик
-clickButton.addEventListener("click", () => {
-  money += clickValue;
-  updateDisplay();
+// Функция для обновления уровня улучшения
+function updateUpgradeDisplay() {
+  document.getElementById('upgrade-level').textContent = `${moneyPerClick} ₽ за клик`;
+  document.getElementById('upgrade-cost').textContent = `${upgradeCost} ₽`;
+}
+
+// Обработчик клика по кнопке
+document.getElementById('click-button').addEventListener('click', function() {
+  money += moneyPerClick;
+  updateMoneyDisplay();
 });
 
-// Улучшение
-upgradeButton.addEventListener("click", () => {
+// Обработчик клика по кнопке улучшения
+document.getElementById('upgrade-button').addEventListener('click', function() {
   if (money >= upgradeCost) {
     money -= upgradeCost;
-    clickValue++;
-    upgradeCost *= 2;
-    updateDisplay();
+    upgradeLevel++;
+    moneyPerClick++;
+    upgradeCost = Math.floor(upgradeCost * 1.5); // Увеличиваем стоимость улучшения
+    updateMoneyDisplay();
+    updateUpgradeDisplay();
   }
 });
-
-// Обновление данных
-function updateDisplay() {
-  moneyDisplay.textContent = `${money} ₽`;
-  upgradeLevel.textContent = `${clickValue} ₽ за клик`;
-  upgradeCostDisplay.textContent = `${upgradeCost} ₽`;
-}
 
 // Переключение вкладок
 const tabs = document.querySelectorAll('.tab');
 tabs.forEach(tab => {
-  tab.addEventListener('click', (event) => {
-    const page = event.target.dataset.page;
-    alert(`Перешли на вкладку: ${page}`);
-    // Здесь добавим переключение содержимого позже
+  tab.addEventListener('click', function() {
+    tabs.forEach(t => t.classList.remove('tab-active'));
+    tab.classList.add('tab-active');
+    // Тут добавьте логику переключения контента вкладки
   });
 });
 
-updateDisplay();
+// Изначально отображаем вкладку Кликер
+document.getElementById('tab-clicker').classList.add('tab-active');
