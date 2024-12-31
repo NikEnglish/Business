@@ -1,84 +1,81 @@
-// Обработчик переключения вкладок
+let money = 0;
+let clickUpgradeLevel = 1;
+let clickUpgradeCost = 50;
+let purchasesCount = 0;
+
 function switchTab(tab) {
     const content = document.querySelectorAll('.content');
     const tabs = document.querySelectorAll('.tab');
-    
+
     content.forEach(item => item.classList.remove('active'));
     tabs.forEach(button => button.classList.remove('active'));
-    
+
     document.getElementById(tab).classList.add('active');
     document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
 }
 
-// Начальная сумма денег
-let money = 0;
-let purchasesCount = 0;
+function animateMoneyUpdate() {
+    let currentMoney = parseInt(document.getElementById('money').textContent.replace('$', ''));
+    let targetMoney = money;
 
-// Логика клика для получения денег
-const clickButton = document.getElementById('click-button');
-const moneyDisplay = document.getElementById('money');
-const profileMoneyDisplay = document.getElementById('profile-money');
-
-clickButton.addEventListener('click', function() {
-    money += 1;  // Увеличение денег при клике
-    moneyDisplay.textContent = money;
-    profileMoneyDisplay.textContent = money;  // Отображение в профиле
-});
-
-// Логика покупки предметов
-const itemsList = document.getElementById('items-list');
-const items = [
-    { name: 'Самолет', cost: 100, description: 'Увеличивает доход' },
-    { name: 'Машина', cost: 50, description: 'Автоматический доход' },
-    { name: 'Яхта', cost: 200, description: 'Мобильная роскошь' },
-];
-
-function displayItems() {
-    itemsList.innerHTML = '';
-    items.forEach(item => {
-        const itemElement = document.createElement('div');
-        itemElement.innerHTML = `<p>${item.name} - Стоимость: ${item.cost} монет</p><p>${item.description}</p><button onclick="buyItem(${item.cost}, '${item.name}')">Купить</button>`;
-        itemsList.appendChild(itemElement);
-    });
+    let interval = setInterval(() => {
+        if (currentMoney < targetMoney) {
+            currentMoney++;
+            document.getElementById('money').textContent = `$${currentMoney}`;
+            document.getElementById('profile-money').textContent = `$${currentMoney}`;
+        } else {
+            clearInterval(interval);
+        }
+    }, 5);
 }
 
-function buyItem(cost, name) {
-    if (money >= cost) {
-        money -= cost;
-        purchasesCount++;
-        alert(`Вы купили ${name}!`);
-        moneyDisplay.textContent = money;
-        profileMoneyDisplay.textContent = money;
-        document.getElementById('purchases-count').textContent = purchasesCount; // Обновление счета покупок
+document.getElementById('click-button').addEventListener('click', function() {
+    money += clickUpgradeLevel;
+    animateMoneyUpdate();
+});
+
+document.getElementById('upgrade-click').addEventListener('click', function() {
+    if (money >= clickUpgradeCost) {
+        money -= clickUpgradeCost;
+        clickUpgradeLevel++;
+        clickUpgradeCost = Math.floor(clickUpgradeCost * 1.5);
+        animateMoneyUpdate();
     } else {
         alert('Недостаточно средств!');
     }
-}
+});
 
-// Логика для инвестиций
-let investedAmount = 0;
-const investButton = document.getElementById('invest-button');
-const investInput = document.getElementById('invest-input');
-const stocksPurchasedDisplay = document.getElementById('stocks-purchased');
+const items = [
+    { name: 'Самолет', cost: 100, description: 'Летайте куда угодно!' },
+    { name: 'Лодка', cost: 50, description: 'Путешествия по водам' },
+    { name: 'Машина', cost: 200, description: 'Скорость и комфорт' }
+];
 
-investButton.addEventListener('click', function() {
-    const amount = parseInt(investInput.value);
-    if (amount > 0 && money >= amount) {
-        investedAmount += amount;
-        money -= amount;
-        stocksPurchasedDisplay.textContent = investedAmount;
-        moneyDisplay.textContent = money;
+const itemsList = document.getElementById('items-list');
+items.forEach(item => {
+    const itemDiv = document.createElement('div');
+    itemDiv.classList.add('item');
+    itemDiv.innerHTML = `<h3>${item.name}</h3><p>${item.description}</p><p>Цена: $${item.cost}</p><button class="buy-button">Купить</button>`;
+    itemDiv.querySelector('.buy-button').addEventListener('click', function() {
+        if (money >= item.cost) {
+            money -= item.cost;
+            purchasesCount++;
+            animateMoneyUpdate();
+            document.getElementById('purchases-count').textContent = purchasesCount;
+        } else {
+            alert('Недостаточно средств!');
+        }
+    });
+    itemsList.appendChild(itemDiv);
+});
+
+document.getElementById('invest-button').addEventListener('click', function() {
+    const investAmount = parseInt(document.getElementById('invest-input').value);
+    if (money >= investAmount && investAmount > 0) {
+        money -= investAmount;
+        animateMoneyUpdate();
+        alert('Инвестиции успешно сделаны!');
     } else {
-        alert('Недостаточно денег для инвестиции!');
+        alert('Недостаточно средств или введена неправильная сумма!');
     }
 });
-
-// Логика для бизнеса (открытие)
-const startBusinessButton = document.getElementById('start-business');
-
-startBusinessButton.addEventListener('click', function() {
-    alert('Бизнес открыт! Он начнет приносить прибыль.');
-});
-
-// Первоначальное отображение предметов
-displayItems();
