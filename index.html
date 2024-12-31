@@ -4,38 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Инвестиционный кликер</title>
-    
+
     <style>
-        /* Основной стиль страницы */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background: #f4f4f9;
             color: #333;
+            overflow-x: hidden;
         }
 
-        /* Контейнер для всей страницы */
         .container {
             width: 100%;
-            max-width: 100%;
+            height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            height: 100vh;
         }
 
-        /* Нижняя панель с плавными переходами */
+        .content {
+            padding: 20px;
+            flex-grow: 1;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+            opacity: 1;
+        }
+
         .bottom-menu {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             position: fixed;
-            bottom: 0;
+            bottom: -80px;
+            left: 0;
             width: 100%;
             background-color: #333;
-            padding: 10px 0;
+            padding: 12px 0;
             border-radius: 15px 15px 0 0;
-            transition: all 0.3s ease-in-out;
+            transition: bottom 0.3s ease-in-out;
             z-index: 10;
         }
 
@@ -43,11 +54,12 @@
             background-color: #555;
             color: white;
             border: none;
-            padding: 12px;
-            width: 60px;
-            text-align: center;
+            padding: 12px 15px;
             border-radius: 10px;
             font-size: 16px;
+            width: 100px;
+            text-align: center;
+            cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
@@ -55,48 +67,27 @@
             background-color: #00bfff;
         }
 
-        /* Контентная область, доступная для разных вкладок */
-        .content {
-            display: none;
-            padding: 20px;
-            flex-grow: 1;
-            overflow-y: auto;
-            margin-bottom: 60px;
+        #money, #profile-money {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00bfff;
+            transition: transform 0.3s ease;
         }
 
-        .content.active {
-            display: block;
-        }
-
-        /* Стиль кнопки внизу страницы */
-        .content button {
-            padding: 10px;
-            background: #00bfff;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-        }
-
-        /* Мобильная адаптация */
         @media screen and (max-width: 600px) {
             .bottom-menu {
                 flex-direction: column;
-                border-radius: 0 0 15px 15px;
+                bottom: -130px;
+                padding: 10px;
             }
 
             .bottom-menu button {
-                margin: 5px 0;
+                margin-bottom: 10px;
                 width: 80%;
                 font-size: 14px;
             }
-
-            .content {
-                padding: 10px;
-            }
         }
     </style>
-
 </head>
 <body>
 
@@ -107,27 +98,36 @@
         <h2>Кликер</h2>
         <p>Заработано: <span id="money">0</span> монет</p>
         <button id="click-button">Кликнуть</button>
+        <br><br>
+        <p>Уровень прокачки клика: <span id="click-upgrade">1</span></p>
+        <button id="upgrade-click">Прокачать клик (Цена: <span id="upgrade-cost">50</span>)</button>
     </div>
 
     <div id="profile" class="content">
         <h2>Профиль</h2>
-        <p>Заработано: 0 монет</p>
-        <p>Профиль: {{ username }}</p>
+        <p>Заработано: <span id="profile-money">0</span> монет</p>
+        <p>Всего покупок: <span id="purchases-count">0</span></p>
     </div>
 
     <div id="items" class="content">
         <h2>Предметы</h2>
-        <p>Места для предметов!</p>
+        <div id="items-list"></div>
     </div>
 
     <div id="investments" class="content">
         <h2>Инвестиции</h2>
-        <p>Акции, криптовалюта!</p>
+        <div>
+            <label for="invest-input">Введите сумму для инвестиции:</label>
+            <input type="number" id="invest-input" />
+            <button id="invest-button">Инвестировать</button>
+        </div>
+        <p>Куплено акций: <span id="stocks-purchased">0</span></p>
     </div>
 
     <div id="businesses" class="content">
         <h2>Бизнесы</h2>
-        <p>Твой бизнес тут</p>
+        <button id="start-business">Открыть новый бизнес</button>
+        <p>Бизнесы активны!</p>
     </div>
 
     <!-- Нижняя панель с вкладками -->
@@ -138,10 +138,128 @@
         <button class="tab" onclick="switchTab('investments')">Инвестиции</button>
         <button class="tab" onclick="switchTab('businesses')">Бизнесы</button>
     </div>
-
 </div>
 
-<script src="script.js"></script>
+<script>
+
+// Переключение вкладок с плавной анимацией
+function switchTab(tab) {
+    const content = document.querySelectorAll('.content');
+    const tabs = document.querySelectorAll('.tab');
+
+    content.forEach(item => {
+        item.classList.remove('active');
+        item.style.opacity = 0;
+    });
+
+    tabs.forEach(button => button.classList.remove('active'));
+
+    setTimeout(() => {
+        document.getElementById(tab).classList.add('active');
+        document.getElementById(tab).style.opacity = 1;
+    }, 500);
+
+    document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+}
+
+// Изначальное состояние
+let money = 0;
+let purchasesCount = 0;
+let clickUpgradeLevel = 1;
+let clickUpgradeCost = 50;
+
+// Функция клика
+const clickButton = document.getElementById('click-button');
+const moneyDisplay = document.getElementById('money');
+const profileMoneyDisplay = document.getElementById('profile-money');
+
+clickButton.addEventListener('click', function() {
+    money += clickUpgradeLevel;  // Денежки прибавляются в зависимости от прокачки
+    animateMoneyUpdate();
+    moneyDisplay.textContent = money;
+    profileMoneyDisplay.textContent = money;
+});
+
+// Прокачка клика
+const upgradeButton = document.getElementById('upgrade-click');
+const upgradeCostDisplay = document.getElementById('upgrade-cost');
+const clickUpgradeDisplay = document.getElementById('click-upgrade');
+
+upgradeButton.addEventListener('click', function() {
+    if (money >= clickUpgradeCost) {
+        money -= clickUpgradeCost; // Уменьшаем деньги на стоимость апгрейда
+        clickUpgradeLevel++;
+        clickUpgradeCost = Math.floor(clickUpgradeCost * 1.5); // С каждым апгрейдом цена увеличивается
+        animateMoneyUpdate();
+        moneyDisplay.textContent = money;
+        upgradeCostDisplay.textContent = clickUpgradeCost;
+        clickUpgradeDisplay.textContent = clickUpgradeLevel;
+    } else {
+        alert('Недостаточно средств для прокачки!');
+    }
+});
+
+// Плавное обновление чисел
+function animateMoneyUpdate() {
+    let currentMoney = parseInt(moneyDisplay.textContent);
+    const targetMoney = money;
+
+    let interval = setInterval(() => {
+        if (currentMoney < targetMoney) {
+            currentMoney++;
+            moneyDisplay.textContent = currentMoney;
+            profileMoneyDisplay.textContent = currentMoney;
+        } else {
+            clearInterval(interval);
+        }
+    }, 5);
+}
+
+// Открытие/закрытие нижней панели
+const bottomMenu = document.querySelector('.bottom-menu');
+let bottomMenuVisible = true;
+
+function toggleMenu() {
+    if (bottomMenuVisible) {
+        bottomMenu.style.bottom = "-80px";
+        bottomMenuVisible = false;
+    } else {
+        bottomMenu.style.bottom = "0px";
+        bottomMenuVisible = true;
+    }
+}
+
+// Покупка предметов
+const itemsList = document.getElementById('items-list');
+const items = [
+    { name: 'Самолет', cost: 100, description: 'Увеличивает доход' },
+    { name: 'Машина', cost: 50, description: 'Автоматический доход' },
+    { name: 'Яхта', cost: 200, description: 'Мобильная роскошь' },
+];
+
+function displayItems() {
+    itemsList.innerHTML = '';
+    items.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.innerHTML = `<p>${item.name} - Стоимость: ${item.cost} монет</p><p>${item.description}</p><button onclick="buyItem(${item.cost}, '${item.name}')">Купить</button>`;
+        itemsList.appendChild(itemElement);
+    });
+}
+
+function buyItem(cost, name) {
+    if (money >= cost) {
+        money -= cost;
+        animateMoneyUpdate();
+        moneyDisplay.textContent = money;
+        alert(`Вы купили ${name}!`);
+    } else {
+        alert('Недостаточно средств!');
+    }
+}
+
+displayItems();
+
+</script>
 
 </body>
 </html>
