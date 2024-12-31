@@ -1,55 +1,105 @@
 /* Общий стиль */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   height: 100vh;
 }
 
+/* Контейнер */
 .container {
-  text-align: center;
-  background: white;
-  border-radius: 10px;
+  background: #ffffffdd;
+  margin-top: 20px;
+  border-radius: 15px;
   padding: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   width: 90%;
   max-width: 400px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Карточка */
 .card {
-  background: #007bff;
+  background: linear-gradient(45deg, #6a11cb, #2575fc);
   color: white;
-  border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 20px;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Кнопки */
-button {
-  background: #28a745;
+/* Основная кнопка */
+.main-button {
+  background: linear-gradient(45deg, #ff512f, #dd2476);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  border-radius: 50px;
+  cursor: pointer;
+  margin: 15px 0;
+  box-shadow: 0 5px 15px rgba(255, 82, 82, 0.2);
+  transition: all 0.3s ease;
+}
+
+.main-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 20px rgba(255, 82, 82, 0.4);
+}
+
+/* Кнопка улучшения */
+.upgrade button {
+  background: #2196f3;
   color: white;
   border: none;
   padding: 10px 20px;
-  font-size: 18px;
-  border-radius: 5px;
+  font-size: 1em;
+  border-radius: 20px;
   cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s ease;
 }
 
-button:hover {
-  background: #218838;
+.upgrade button:hover {
+  background: #1976d2;
+  transform: translateY(-2px);
 }
 
-button:disabled {
-  background: #aaa;
-  cursor: not-allowed;
+/* Вкладки */
+.tabs {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  background: linear-gradient(45deg, #6a11cb, #2575fc);
+  padding: 10px 0;
 }
 
-.upgrade {
-  margin-top: 20px;
-  font-size: 16px;
+.tab {
+  flex: 1;
+  text-align: center;
+  background: transparent;
+  border: none;
+  font-size: 1em;
+  color: white;
+  font-weight: bold;
+  padding: 10px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tab:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.3);
 }
