@@ -1,46 +1,84 @@
+// Обработчик переключения вкладок
+function switchTab(tab) {
+    const content = document.querySelectorAll('.content');
+    const tabs = document.querySelectorAll('.tab');
+    
+    content.forEach(item => item.classList.remove('active'));
+    tabs.forEach(button => button.classList.remove('active'));
+    
+    document.getElementById(tab).classList.add('active');
+    document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+}
+
+// Начальная сумма денег
 let money = 0;
-let moneyPerClick = 1;
-let upgradeCost = 10;
-let upgradeLevel = 1;
+let purchasesCount = 0;
 
-// Функция для обновления отображения денег
-function updateMoneyDisplay() {
-  document.getElementById('money').textContent = `${money} ₽`;
+// Логика клика для получения денег
+const clickButton = document.getElementById('click-button');
+const moneyDisplay = document.getElementById('money');
+const profileMoneyDisplay = document.getElementById('profile-money');
+
+clickButton.addEventListener('click', function() {
+    money += 1;  // Увеличение денег при клике
+    moneyDisplay.textContent = money;
+    profileMoneyDisplay.textContent = money;  // Отображение в профиле
+});
+
+// Логика покупки предметов
+const itemsList = document.getElementById('items-list');
+const items = [
+    { name: 'Самолет', cost: 100, description: 'Увеличивает доход' },
+    { name: 'Машина', cost: 50, description: 'Автоматический доход' },
+    { name: 'Яхта', cost: 200, description: 'Мобильная роскошь' },
+];
+
+function displayItems() {
+    itemsList.innerHTML = '';
+    items.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.innerHTML = `<p>${item.name} - Стоимость: ${item.cost} монет</p><p>${item.description}</p><button onclick="buyItem(${item.cost}, '${item.name}')">Купить</button>`;
+        itemsList.appendChild(itemElement);
+    });
 }
 
-// Функция для обновления уровня улучшения
-function updateUpgradeDisplay() {
-  document.getElementById('upgrade-level').textContent = `${moneyPerClick} ₽ за клик`;
-  document.getElementById('upgrade-cost').textContent = `${upgradeCost} ₽`;
+function buyItem(cost, name) {
+    if (money >= cost) {
+        money -= cost;
+        purchasesCount++;
+        alert(`Вы купили ${name}!`);
+        moneyDisplay.textContent = money;
+        profileMoneyDisplay.textContent = money;
+        document.getElementById('purchases-count').textContent = purchasesCount; // Обновление счета покупок
+    } else {
+        alert('Недостаточно средств!');
+    }
 }
 
-// Обработчик клика по кнопке
-document.getElementById('click-button').addEventListener('click', function() {
-  money += moneyPerClick;
-  updateMoneyDisplay();
+// Логика для инвестиций
+let investedAmount = 0;
+const investButton = document.getElementById('invest-button');
+const investInput = document.getElementById('invest-input');
+const stocksPurchasedDisplay = document.getElementById('stocks-purchased');
+
+investButton.addEventListener('click', function() {
+    const amount = parseInt(investInput.value);
+    if (amount > 0 && money >= amount) {
+        investedAmount += amount;
+        money -= amount;
+        stocksPurchasedDisplay.textContent = investedAmount;
+        moneyDisplay.textContent = money;
+    } else {
+        alert('Недостаточно денег для инвестиции!');
+    }
 });
 
-// Обработчик клика по кнопке улучшения
-document.getElementById('upgrade-button').addEventListener('click', function() {
-  if (money >= upgradeCost) {
-    money -= upgradeCost;
-    upgradeLevel++;
-    moneyPerClick++;
-    upgradeCost = Math.floor(upgradeCost * 1.5); // Увеличиваем стоимость улучшения
-    updateMoneyDisplay();
-    updateUpgradeDisplay();
-  }
+// Логика для бизнеса (открытие)
+const startBusinessButton = document.getElementById('start-business');
+
+startBusinessButton.addEventListener('click', function() {
+    alert('Бизнес открыт! Он начнет приносить прибыль.');
 });
 
-// Переключение вкладок
-const tabs = document.querySelectorAll('.tab');
-tabs.forEach(tab => {
-  tab.addEventListener('click', function() {
-    tabs.forEach(t => t.classList.remove('tab-active'));
-    tab.classList.add('tab-active');
-    // Тут добавьте логику переключения контента вкладки
-  });
-});
-
-// Изначально отображаем вкладку Кликер
-document.getElementById('tab-clicker').classList.add('tab-active');
+// Первоначальное отображение предметов
+displayItems();
