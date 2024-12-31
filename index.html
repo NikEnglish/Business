@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clicker Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Вкладка Кликер -->
+  <div class="container">
+    <!-- Карточка сверху -->
+    <div class="card">
+      <h2>Ваш заработок</h2>
+      <p id="money">0 ₽</p>
+    </div>
+
+    <!-- Кнопка клика -->
+    <button id="click-button">Заработать деньги</button>
+
+    <!-- Прокачка -->
+    <div class="upgrade">
+      <p>Улучшение: <span id="upgrade-level">1 ₽ за клик</span></p>
+      <button id="upgrade-button">Улучшить за <span id="upgrade-cost">10 ₽</span></button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
