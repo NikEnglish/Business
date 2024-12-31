@@ -1,182 +1,297 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Инвестиционный кликер</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f0f0f5;
-            overflow-x: hidden;
-            transition: all 0.3s ease;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кликер Игра</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-        .container {
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            padding-bottom: 60px;
-            padding: 20px;
-        }
+    .header {
+      background-color: #444;
+      color: #fff;
+      padding: 10px 0;
+      text-align: center;
+    }
 
-        .content {
-            padding: 30px;
-            display: none;
-        }
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      background-color: #333;
+      padding: 10px;
+      transition: 0.3s;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
 
-        .content.active {
-            display: block;
-        }
+    .tabs button {
+      background-color: #444;
+      color: white;
+      border: 1px solid #555;
+      padding: 10px;
+      font-size: 14px;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
 
-        h2 {
-            color: #333;
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
+    .tabs button:hover {
+      background-color: #666;
+    }
 
-        .bottom-menu {
-            display: flex;
-            justify-content: space-around;
-            position: fixed;
-            bottom: -100px;
-            left: 0;
-            width: 100%;
-            background-color: #333;
-            padding: 10px 0;
-            border-radius: 15px 15px 0 0;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-            transition: bottom 0.5s ease;
-            z-index: 10;
-        }
+    .tabs button.active {
+      background-color: #888;
+    }
 
-        .bottom-menu button {
-            background: linear-gradient(145deg, #56ccf2, #2f80ed);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 50px;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
-        }
+    .content {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 15px;
+      transition: opacity 0.5s;
+    }
 
-        .bottom-menu button:hover {
-            background: linear-gradient(145deg, #2f80ed, #56ccf2);
-            transform: translateY(-4px);
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
-        }
+    .button-style {
+      background-color: #0099cc;
+      color: #fff;
+      border: none;
+      padding: 15px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
 
-        .item {
-            background: #fff;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
+    .button-style:hover {
+      background-color: #0077b3;
+      transform: scale(1.05);
+    }
 
-        .item:hover {
-            transform: translateY(-5px);
-            background-color: #fce4ec;
-        }
+    .button-style:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
 
-        .item button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+    .inventory-item {
+      background-color: #fff;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
 
-        .item button:hover {
-            background-color: #45a049;
-        }
+    .item-title {
+      font-weight: bold;
+    }
 
-        .bottom-menu button.hide-tab {
-            position: absolute;
-            right: 5px;
-            top: -35px;
-            background: transparent;
-            color: white;
-            font-size: 22px;
-            cursor: pointer;
-        }
+    .notification {
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #f44336;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      visibility: hidden;
+    }
 
-        #money, #profile-money {
-            font-size: 24px;
-            font-weight: bold;
-            color: #0077b6;
-            transition: transform 0.3s ease;
-        }
-
-        #items-list {
-            margin-top: 20px;
-            max-height: 450px;
-            overflow-y: auto;
-        }
-
-        #items-list p {
-            font-size: 16px;
-        }
-
-        @media screen and (max-width: 600px) {
-            .bottom-menu {
-                flex-direction: column;
-                padding: 10px;
-                bottom: 0;
-            }
-
-            .bottom-menu button {
-                margin-bottom: 10px;
-                font-size: 14px;
-            }
-        }
-    </style>
+    .notification.show {
+      visibility: visible;
+    }
+  </style>
 </head>
 <body>
+  <div class="header">
+    <h1>Кликер Игра</h1>
+    <p id="money">Деньги: 0 $</p>
+  </div>
 
-<div class="container">
-
-    <div id="clicker" class="content active">
-        <h2>Кликер</h2>
-        <p>Заработано: <span id="money">$0</span></p>
-        <button id="click-button">Кликнуть</button>
-        <br><br>
-        <p>Уровень прокачки клика: <span id="click-upgrade">1</span></p>
-        <button id="upgrade-click">Прокачать клик (Цена: <span id="upgrade-cost">$50</span>)</button>
+  <div class="content" id="content">
+    <!-- Кликер Вкладка -->
+    <div id="clicker-tab" class="tab-content">
+      <h2>Кликер</h2>
+      <button class="button-style" id="click-button">Кликнуть</button>
+      <p>За клик: <span id="click-reward">1</span> $</p>
+      <button class="button-style" id="upgrade-button">Улучшить клик (Цена: 10 $)</button>
+      <p>Доход за клик улучшен на <span id="click-upgrade">0</span> раз.</p>
     </div>
 
-    <div id="profile" class="content">
-        <h2>Профиль</h2>
-        <p>Заработано: <span id="profile-money">$0</span></p>
-        <p>Всего покупок: <span id="purchases-count">0</span></p>
-        <div id="items-list"></div>
+    <!-- Профиль вкладка -->
+    <div id="profile-tab" class="tab-content" style="display:none;">
+      <h2>Профиль</h2>
+      <p>Общий доход: 0 $</p>
+      <p>Расходы на улучшения: 0 $</p>
     </div>
 
-    <div id="investments" class="content">
-        <h2>Инвестиции</h2>
-        <p>Выберите компанию или криптовалюту для покупки:</p>
-        <button class="item" onclick="buyInvestment('Акции Tesla', 200)">Купить акции Tesla (Цена: $200)</button>
-        <button class="item" onclick="buyInvestment('Bitcoin', 300)">Купить Bitcoin (Цена: $300)</button>
-        <button class="item" onclick="buyInvestment('Ethereum', 150)">Купить Ethereum (Цена: $150)</button>
+    <!-- Предметы вкладка -->
+    <div id="items-tab" class="tab-content" style="display:none;">
+      <h2>Предметы</h2>
+      <div class="inventory-item">
+        <p class="item-title">Самолет</p>
+        <p>Цена: 50 $</p>
+        <button class="button-style" id="buy-plane">Купить</button>
+      </div>
+      <div class="inventory-item">
+        <p class="item-title">Машина</p>
+        <p>Цена: 30 $</p>
+        <button class="button-style" id="buy-car">Купить</button>
+      </div>
     </div>
 
-    <div class="bottom-menu">
-        <button id="menu-button-1" class="tab active">Кликер</button>
-        <button id="menu-button-2" class="tab">Профиль</button>
-        <button id="menu-button-3" class="tab">Инвестиции</button>
-        <button class="hide-tab" onclick="toggleMenu()">×</button>
+    <!-- Инвестиции вкладка -->
+    <div id="investments-tab" class="tab-content" style="display:none;">
+      <h2>Инвестиции</h2>
+      <p>Вы можете инвестировать в акции или криптовалюту</p>
+      <div class="inventory-item">
+        <p class="item-title">Акции Apple</p>
+        <p>Цена за акцию: 100 $</p>
+        <button class="button-style" id="buy-apple">Купить акцию</button>
+      </div>
+      <div class="inventory-item">
+        <p class="item-title">Биткойн</p>
+        <p>Цена 1 BTC: 50000 $</p>
+        <button class="button-style" id="buy-btc">Купить биткойн</button>
+      </div>
     </div>
 
-</div>
+    <!-- Бизнес вкладка -->
+    <div id="business-tab" class="tab-content" style="display:none;">
+      <h2>Бизнесы</h2>
+      <p>Вы можете открыть бизнес и увеличивать доход.</p>
+      <button class="button-style" id="buy-business">Открыть бизнес</button>
+    </div>
+  </div>
 
-<script src="script.js"></script>
+  <div class="tabs">
+    <button class="active" onclick="switchTab('clicker')">Кликер</button>
+    <button onclick="switchTab('profile')">Профиль</button>
+    <button onclick="switchTab('items')">Предметы</button>
+    <button onclick="switchTab('investments')">Инвестиции</button>
+    <button onclick="switchTab('business')">Бизнес</button>
+  </div>
+
+  <div id="notification" class="notification">Недостаточно средств для этого!</div>
+
+  <script>
+    let money = 0;
+    let clickReward = 1;
+    let clickUpgradeLevel = 0;
+    let items = [];
+    let notifications = document.getElementById('notification');
+    let clickButton = document.getElementById('click-button');
+    let upgradeButton = document.getElementById('upgrade-button');
+    let buyPlaneButton = document.getElementById('buy-plane');
+    let buyCarButton = document.getElementById('buy-car');
+    let buyAppleButton = document.getElementById('buy-apple');
+    let buyBtcButton = document.getElementById('buy-btc');
+    let buyBusinessButton = document.getElementById('buy-business');
+    
+    // Update the money displayed
+    function updateMoney() {
+      document.getElementById('money').innerText = `Деньги: ${money} $`;
+      document.getElementById('click-reward').innerText = clickReward;
+    }
+
+    // Show the selected tab content
+    function switchTab(tabName) {
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => tab.style.display = 'none');
+      document.getElementById(`${tabName}-tab`).style.display = 'block';
+
+      const buttons = document.querySelectorAll('.tabs button');
+      buttons.forEach(button => button.classList.remove('active'));
+      document.querySelector(`.tabs button:nth-child(${['clicker', 'profile', 'items', 'investments', 'business'].indexOf(tabName) + 1})`).classList.add('active');
+    }
+
+    // Click functionality
+    clickButton.addEventListener('click', () => {
+      money += clickReward;
+      updateMoney();
+    });
+
+    // Upgrade functionality
+    upgradeButton.addEventListener('click', () => {
+      let upgradeCost = 10 * (clickUpgradeLevel + 1);
+      if (money >= upgradeCost) {
+        money -= upgradeCost;
+        clickUpgradeLevel++;
+        clickReward = 1 + clickUpgradeLevel;
+        updateMoney();
+      } else {
+        notifications.classList.add('show');
+        setTimeout(() => notifications.classList.remove('show'), 2000);
+      }
+    });
+
+    // Item buy buttons
+    buyPlaneButton.addEventListener('click', () => {
+      if (money >= 50) {
+        money -= 50;
+        items.push('Самолет');
+        updateMoney();
+      } else {
+        notifications.classList.add('show');
+        setTimeout(() => notifications.classList.remove('show'), 2000);
+      }
+    });
+
+    buyCarButton.addEventListener('click', () => {
+      if (money >= 30) {
+        money -= 30;
+        items.push('Машина');
+        updateMoney();
+      } else {
+        notifications.classList.add('show');
+        setTimeout(() => notifications.classList.remove('show'), 2000);
+      }
+    });
+
+    // Investment buy buttons
+    buyAppleButton.addEventListener('click', () => {
+      if (money >= 100) {
+        money -= 100;
+        updateMoney();
+      } else {
+        notifications.classList.add('show');
+        setTimeout(() => notifications.classList.remove('show'), 2000);
+      }
+    });
+
+    buyBtcButton.addEventListener('click', () => {
+      if (money >= 50000) {
+        money -= 50000;
+        updateMoney();
+      } else {
+        notifications.classList.add('show');
+        setTimeout(() => notifications.classList.remove('show'), 2000);
+      }
+    });
+
+    // Business
+    buyBusinessButton.addEventListener('click', () => {
+      if (money >= 200) {
+        money -= 200;
+        updateMoney();
+      } else {
+        notifications.classList.add('show');
+        setTimeout(() => notifications.classList.remove('show'), 2000);
+      }
+    });
+
+    // Default tab to be shown
+    switchTab('clicker');
+  </script>
 </body>
 </html>
