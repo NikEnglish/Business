@@ -124,53 +124,54 @@
       <h2>Кликер</h2>
       <button class="button-style" id="click-button">Кликнуть</button>
       <p>За клик: <span id="click-reward">1</span> $</p>
-      <button class="button-style" id="upgrade-button">Улучшить клик (Цена: 10 $)</button>
-      <p>Доход за клик улучшен на <span id="click-upgrade">0</span> раз.</p>
+      <button class="button-style" id="upgrade-button">Улучшить клик (Цена: <span id="upgrade-cost">10</span> $)</button>
+      <p>Улучшений клика: <span id="click-upgrade-level">0</span> </p>
     </div>
 
     <!-- Профиль вкладка -->
     <div id="profile-tab" class="tab-content" style="display:none;">
       <h2>Профиль</h2>
-      <p>Общий доход: 0 $</p>
-      <p>Расходы на улучшения: 0 $</p>
+      <p>Общий доход: <span id="total-income">0</span> $</p>
+      <p>Расходы на улучшения: <span id="total-expenses">0</span> $</p>
     </div>
 
     <!-- Предметы вкладка -->
     <div id="items-tab" class="tab-content" style="display:none;">
       <h2>Предметы</h2>
       <div class="inventory-item">
-        <p class="item-title">Самолет</p>
-        <p>Цена: 50 $</p>
-        <button class="button-style" id="buy-plane">Купить</button>
+        <p class="item-title">Автомобиль (Renault Polo)</p>
+        <p>Цена: 100 $</p>
+        <button class="button-style" id="buy-renault">Купить</button>
       </div>
       <div class="inventory-item">
-        <p class="item-title">Машина</p>
-        <p>Цена: 30 $</p>
-        <button class="button-style" id="buy-car">Купить</button>
+        <p class="item-title">Автомобиль (Volkswagen)</p>
+        <p>Цена: 150 $</p>
+        <button class="button-style" id="buy-volkswagen">Купить</button>
       </div>
     </div>
 
     <!-- Инвестиции вкладка -->
     <div id="investments-tab" class="tab-content" style="display:none;">
       <h2>Инвестиции</h2>
-      <p>Вы можете инвестировать в акции или криптовалюту</p>
       <div class="inventory-item">
         <p class="item-title">Акции Apple</p>
-        <p>Цена за акцию: 100 $</p>
-        <button class="button-style" id="buy-apple">Купить акцию</button>
+        <p>Цена за акцию: 150 $</p>
+        <input type="number" id="stock-quantity" min="1" value="1">
+        <button class="button-style" id="buy-stock">Купить</button>
       </div>
       <div class="inventory-item">
         <p class="item-title">Биткойн</p>
         <p>Цена 1 BTC: 50000 $</p>
-        <button class="button-style" id="buy-btc">Купить биткойн</button>
+        <input type="number" id="btc-quantity" min="1" value="1">
+        <button class="button-style" id="buy-btc">Купить</button>
       </div>
     </div>
 
     <!-- Бизнес вкладка -->
     <div id="business-tab" class="tab-content" style="display:none;">
       <h2>Бизнесы</h2>
-      <p>Вы можете открыть бизнес и увеличивать доход.</p>
-      <button class="button-style" id="buy-business">Открыть бизнес</button>
+      <p>Вы можете купить бизнес и начать получать доход.</p>
+      <button class="button-style" id="buy-business">Открыть бизнес (Цена: 200 $)</button>
     </div>
   </div>
 
@@ -186,112 +187,130 @@
 
   <script>
     let money = 0;
-    let clickReward = 1;
-    let clickUpgradeLevel = 0;
-    let items = [];
-    let notifications = document.getElementById('notification');
-    let clickButton = document.getElementById('click-button');
-    let upgradeButton = document.getElementById('upgrade-button');
-    let buyPlaneButton = document.getElementById('buy-plane');
-    let buyCarButton = document.getElementById('buy-car');
-    let buyAppleButton = document.getElementById('buy-apple');
-    let buyBtcButton = document.getElementById('buy-btc');
-    let buyBusinessButton = document.getElementById('buy-business');
-    
-    // Update the money displayed
-    function updateMoney() {
-      document.getElementById('money').innerText = `Деньги: ${money} $`;
-      document.getElementById('click-reward').innerText = clickReward;
-    }
+let clickReward = 1;
+let clickUpgradeLevel = 0;
+let items = [];
+let investments = {};
+let businesses = [];
+let notifications = document.getElementById('notification');
+let clickButton = document.getElementById('click-button');
+let upgradeButton = document.getElementById('upgrade-button');
+let buyRenaultButton = document.getElementById('buy-renault');
+let buyVolkswagenButton = document.getElementById('buy-volkswagen');
+let buyStockButton = document.getElementById('buy-stock');
+let buyBtcButton = document.getElementById('buy-btc');
+let buyBusinessButton = document.getElementById('buy-business');
 
-    // Show the selected tab content
-    function switchTab(tabName) {
-      const tabs = document.querySelectorAll('.tab-content');
-      tabs.forEach(tab => tab.style.display = 'none');
-      document.getElementById(`${tabName}-tab`).style.display = 'block';
+// Update the money and profile info displayed
+function updateMoney() {
+  document.getElementById('money').innerText = `Деньги: ${money} $`;
+  document.getElementById('total-income').innerText = money;
+}
 
-      const buttons = document.querySelectorAll('.tabs button');
-      buttons.forEach(button => button.classList.remove('active'));
-      document.querySelector(`.tabs button:nth-child(${['clicker', 'profile', 'items', 'investments', 'business'].indexOf(tabName) + 1})`).classList.add('active');
-    }
+// Switch tab functionality
+function switchTab(tabName) {
+  const tabs = document.querySelectorAll('.tab-content');
+  tabs.forEach(tab => tab.style.display = 'none');
+  document.getElementById(`${tabName}-tab`).style.display = 'block';
 
-    // Click functionality
-    clickButton.addEventListener('click', () => {
-      money += clickReward;
-      updateMoney();
-    });
+  const buttons = document.querySelectorAll('.tabs button');
+  buttons.forEach(button => button.classList.remove('active'));
+  document.querySelector(`.tabs button:nth-child(${['clicker', 'profile', 'items', 'investments', 'business'].indexOf(tabName) + 1})`).classList.add('active');
+}
 
-    // Upgrade functionality
-    upgradeButton.addEventListener('click', () => {
-      let upgradeCost = 10 * (clickUpgradeLevel + 1);
-      if (money >= upgradeCost) {
-        money -= upgradeCost;
-        clickUpgradeLevel++;
-        clickReward = 1 + clickUpgradeLevel;
-        updateMoney();
-      } else {
-        notifications.classList.add('show');
-        setTimeout(() => notifications.classList.remove('show'), 2000);
-      }
-    });
+// Click functionality
+clickButton.addEventListener('click', () => {
+  money += clickReward;
+  updateMoney();
+});
 
-    // Item buy buttons
-    buyPlaneButton.addEventListener('click', () => {
-      if (money >= 50) {
-        money -= 50;
-        items.push('Самолет');
-        updateMoney();
-      } else {
-        notifications.classList.add('show');
-        setTimeout(() => notifications.classList.remove('show'), 2000);
-      }
-    });
+// Upgrade click functionality
+upgradeButton.addEventListener('click', () => {
+  const upgradeCost = Math.pow(10, clickUpgradeLevel + 1);  // Cost increase with each upgrade
+  if (money >= upgradeCost) {
+    money -= upgradeCost;
+    clickUpgradeLevel++;
+    clickReward = Math.pow(2, clickUpgradeLevel); // Increase reward for each click
+    document.getElementById('upgrade-cost').innerText = upgradeCost;
+    document.getElementById('click-reward').innerText = clickReward;
+    document.getElementById('click-upgrade-level').innerText = clickUpgradeLevel;
+    updateMoney();
+  } else {
+    notifications.classList.add('show');
+    setTimeout(() => notifications.classList.remove('show'), 2000);
+  }
+});
 
-    buyCarButton.addEventListener('click', () => {
-      if (money >= 30) {
-        money -= 30;
-        items.push('Машина');
-        updateMoney();
-      } else {
-        notifications.classList.add('show');
-        setTimeout(() => notifications.classList.remove('show'), 2000);
-      }
-    });
+// Buy Renault Polo
+buyRenaultButton.addEventListener('click', () => {
+  const carPrice = 100; 
+  if (money >= carPrice) {
+    money -= carPrice;
+    items.push('Renault Polo');
+    updateMoney();
+  } else {
+    notifications.classList.add('show');
+    setTimeout(() => notifications.classList.remove('show'), 2000);
+  }
+});
 
-    // Investment buy buttons
-    buyAppleButton.addEventListener('click', () => {
-      if (money >= 100) {
-        money -= 100;
-        updateMoney();
-      } else {
-        notifications.classList.add('show');
-        setTimeout(() => notifications.classList.remove('show'), 2000);
-      }
-    });
+// Buy Volkswagen
+buyVolkswagenButton.addEventListener('click', () => {
+  const carPrice = 150; 
+  if (money >= carPrice) {
+    money -= carPrice;
+    items.push('Volkswagen');
+    updateMoney();
+  } else {
+    notifications.classList.add('show');
+    setTimeout(() => notifications.classList.remove('show'), 2000);
+  }
+});
 
-    buyBtcButton.addEventListener('click', () => {
-      if (money >= 50000) {
-        money -= 50000;
-        updateMoney();
-      } else {
-        notifications.classList.add('show');
-        setTimeout(() => notifications.classList.remove('show'), 2000);
-      }
-    });
+// Buy stock (Apple)
+buyStockButton.addEventListener('click', () => {
+  const stockPrice = 150; 
+  const quantity = document.getElementById('stock-quantity').value;
+  const totalPrice = stockPrice * quantity;
 
-    // Business
-    buyBusinessButton.addEventListener('click', () => {
-      if (money >= 200) {
-        money -= 200;
-        updateMoney();
-      } else {
-        notifications.classList.add('show');
-        setTimeout(() => notifications.classList.remove('show'), 2000);
-      }
-    });
+  if (money >= totalPrice) {
+    money -= totalPrice;
+    investments['Apple'] = (investments['Apple'] || 0) + parseInt(quantity);
+    updateMoney();
+  } else {
+    notifications.classList.add('show');
+    setTimeout(() => notifications.classList.remove('show'), 2000);
+  }
+});
 
-    // Default tab to be shown
-    switchTab('clicker');
+// Buy Bitcoin
+buyBtcButton.addEventListener('click', () => {
+  const btcPrice = 50000; 
+  const quantity = document.getElementById('btc-quantity').value;
+  const totalPrice = btcPrice * quantity;
+
+  if (money >= totalPrice) {
+    money -= totalPrice;
+    investments['BTC'] = (investments['BTC'] || 0) + parseInt(quantity);
+    updateMoney();
+  } else {
+    notifications.classList.add('show');
+    setTimeout(() => notifications.classList.remove('show'), 2000);
+  }
+});
+
+// Buy Business
+buyBusinessButton.addEventListener('click', () => {
+  const businessPrice = 200;
+  if (money >= businessPrice) {
+    money -= businessPrice;
+    businesses.push('Бизнес');
+    updateMoney();
+  } else {
+    notifications.classList.add('show');
+    setTimeout(() => notifications.classList.remove('show'), 2000);
+  }
+});
   </script>
 </body>
 </html>
