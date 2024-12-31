@@ -7,194 +7,135 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
             margin: 0;
             padding: 0;
+            background: #f0f0f5;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
         }
 
         .container {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            height: 100vh;
             padding-bottom: 60px;
+            padding: 20px;
         }
 
         .content {
             padding: 30px;
-            flex-grow: 1;
             display: none;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: opacity 0.3s ease, transform 0.5s ease;
         }
 
         .content.active {
             display: block;
-            opacity: 1;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 20px;
         }
 
         .bottom-menu {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             position: fixed;
-            bottom: -80px;
+            bottom: -100px;
             left: 0;
             width: 100%;
             background-color: #333;
             padding: 10px 0;
             border-radius: 15px 15px 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
             transition: bottom 0.5s ease;
             z-index: 10;
         }
 
         .bottom-menu button {
-            background-color: #444;
-            color: #fff;
+            background: linear-gradient(145deg, #56ccf2, #2f80ed);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
             border: none;
-            padding: 15px 25px;
-            border-radius: 12px;
             font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
         }
 
         .bottom-menu button:hover {
-            background-color: #ff4500;
-            transform: scale(1.1);
+            background: linear-gradient(145deg, #2f80ed, #56ccf2);
+            transform: translateY(-4px);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .bottom-menu button.active {
-            background-color: #ff4500;
-        }
-
-        .toggle-menu {
-            position: absolute;
-            top: 10px;
-            left: 0;
-            background: #00bfff;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .toggle-menu.open {
-            transform: rotate(180deg);
-        }
-
-        .section-header {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .item, .business {
-            background: #e9e9e9;
+        .item {
+            background: #fff;
             padding: 15px;
-            margin: 10px 0;
+            margin: 15px 0;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s;
+            transition: transform 0.3s ease, background-color 0.3s ease;
         }
 
-        .item:hover, .business:hover {
-            background-color: #d1f7ff;
+        .item:hover {
+            transform: translateY(-5px);
+            background-color: #fce4ec;
         }
 
-        .buy-button, .invest-button, .business-button {
-            background: #4CAF50;
+        .item button {
+            background-color: #4CAF50;
             color: white;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: background-color 0.3s ease;
         }
 
-        .buy-button:hover, .invest-button:hover, .business-button:hover {
-            background: #45a049;
+        .item button:hover {
+            background-color: #45a049;
         }
 
-        .buy-button:disabled {
-            background: #888;
+        .bottom-menu button.hide-tab {
+            position: absolute;
+            right: 5px;
+            top: -35px;
+            background: transparent;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
         }
 
-        #money {
+        #money, #profile-money {
             font-size: 24px;
             font-weight: bold;
-            color: #00bfff;
+            color: #0077b6;
+            transition: transform 0.3s ease;
         }
 
         #items-list {
-            max-height: 400px;
+            margin-top: 20px;
+            max-height: 450px;
             overflow-y: auto;
         }
-    </style>
-</head>
-<body>
 
-<div class="container">
-    <button class="toggle-menu" onclick="toggleMenu()">⏷</button>
+        #items-list p {
+            font-size: 16px;
+        }
 
-    <div id="clicker" class="content active">
-        <h2 class="section-header">Кликер</h2>
-        <p>Заработано: <span id="money">$0</span></p>
-        <button id="click-button">Кликнуть!</button>
-        <p>Уровень прокачки клика: <span id="click-upgrade">1</span></p>
-        <button id="upgrade-click">Прокачать клик (Цена: <span id="upgrade-cost">$50</span>)</button>
-    </div>
-
-    <div id="profile" class="content">
-        <h2 class="section-header">Профиль</h2>
-        <p>Заработано: <span id="profile-money">$0</span></p>
-        <p>Всего покупок: <span id="purchases-count">0</span></p>
-    </div>
-
-    <div id="items" class="content">
-        <h2 class="section-header">Предметы для покупки</h2>
-        <div id="items-list"></div>
-    </div>
-
-    <div id="investments" class="content">
-        <h2 class="section-header">Инвестиции</h2>
-        <div>
-            <label for="invest-input">Введите сумму для инвестиции:</label>
-            <input type="number" id="invest-input" />
-            <button id="invest-button" class="invest-button">Инвестировать</button>
-        </div>
-    </div>
-
-    <div id="businesses" class="content">
-        <h2 class="section-header">Бизнесы</h2>
-        <button id="start-business" class="business-button">Открыть новый бизнес</button>
-        <div id="business-list"></div>
-    </div>
-
-    <div class="bottom-menu">
-        <button class="tab active" onclick="switchTab('clicker')">Кликер</button>
-        <button class="tab" onclick="switchTab('profile')">Профиль</button>
-        <button class="tab" onclick="switchTab('items')">Предметы</button>
-        <button class="tab" onclick="switchTab('investments')">Инвестиции</button>
-        <button class="tab" onclick="switchTab('businesses')">Бизнесы</button>
-    </div>
-</div>
-
-<script src="script.js"></script>
-</body>
-</html>        @media screen and (max-width: 600px) {
+        @media screen and (max-width: 600px) {
             .bottom-menu {
                 flex-direction: column;
-                padding: 10px 0;
+                padding: 10px;
                 bottom: 0;
             }
 
             .bottom-menu button {
                 margin-bottom: 10px;
                 font-size: 14px;
-                padding: 12px;
             }
         }
     </style>
@@ -203,7 +144,6 @@
 
 <div class="container">
 
-    <!-- Вкладки с контентом -->
     <div id="clicker" class="content active">
         <h2>Кликер</h2>
         <p>Заработано: <span id="money">$0</span></p>
@@ -217,144 +157,26 @@
         <h2>Профиль</h2>
         <p>Заработано: <span id="profile-money">$0</span></p>
         <p>Всего покупок: <span id="purchases-count">0</span></p>
-    </div>
-
-    <div id="items" class="content">
-        <h2>Предметы</h2>
         <div id="items-list"></div>
     </div>
 
     <div id="investments" class="content">
         <h2>Инвестиции</h2>
-        <div>
-            <label for="invest-input">Введите сумму для инвестиции:</label>
-            <input type="number" id="invest-input" />
-            <button id="invest-button">Инвестировать</button>
-        </div>
-        <p>Куплено акций: <span id="stocks-purchased">0</span></p>
+        <p>Выберите компанию или криптовалюту для покупки:</p>
+        <button class="item" onclick="buyInvestment('Акции Tesla', 200)">Купить акции Tesla (Цена: $200)</button>
+        <button class="item" onclick="buyInvestment('Bitcoin', 300)">Купить Bitcoin (Цена: $300)</button>
+        <button class="item" onclick="buyInvestment('Ethereum', 150)">Купить Ethereum (Цена: $150)</button>
     </div>
 
-    <div id="businesses" class="content">
-        <h2>Бизнесы</h2>
-        <button id="start-business">Открыть новый бизнес</button>
-        <p>Бизнесы активны!</p>
-    </div>
-
-    <!-- Нижняя панель с вкладками -->
     <div class="bottom-menu">
-        <button class="tab active" onclick="switchTab('clicker')">Кликер</button>
-        <button class="tab" onclick="switchTab('profile')">Профиль</button>
-        <button class="tab" onclick="switchTab('items')">Предметы</button>
-        <button class="tab" onclick="switchTab('investments')">Инвестиции</button>
-        <button class="tab" onclick="switchTab('businesses')">Бизнесы</button>
+        <button id="menu-button-1" class="tab active">Кликер</button>
+        <button id="menu-button-2" class="tab">Профиль</button>
+        <button id="menu-button-3" class="tab">Инвестиции</button>
+        <button class="hide-tab" onclick="toggleMenu()">×</button>
     </div>
+
 </div>
 
-<script>
-
-// Переключение вкладок с плавной анимацией
-function switchTab(tab) {
-    const content = document.querySelectorAll('.content');
-    const tabs = document.querySelectorAll('.tab');
-
-    content.forEach(item => {
-        item.classList.remove('active');
-    });
-
-    tabs.forEach(button => button.classList.remove('active'));
-
-    document.getElementById(tab).classList.add('active');
-    document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
-}
-
-// Изначальное состояние
-let money = 0;
-let purchasesCount = 0;
-let clickUpgradeLevel = 1;
-let clickUpgradeCost = 50;
-
-// Функция клика
-const clickButton = document.getElementById('click-button');
-const moneyDisplay = document.getElementById('money');
-const profileMoneyDisplay = document.getElementById('profile-money');
-
-clickButton.addEventListener('click', function() {
-    money += clickUpgradeLevel;
-    animateMoneyUpdate();
-    moneyDisplay.textContent = `$${money}`;
-    profileMoneyDisplay.textContent = `$${money}`;
-});
-
-// Прокачка клика
-const upgradeButton = document.getElementById('upgrade-click');
-const upgradeCostDisplay = document.getElementById('upgrade-cost');
-const clickUpgradeDisplay = document.getElementById('click-upgrade');
-
-upgradeButton.addEventListener('click', function() {
-    if (money >= clickUpgradeCost) {
-        money -= clickUpgradeCost;
-        clickUpgradeLevel++;
-        clickUpgradeCost = Math.floor(clickUpgradeCost * 1.5); // Цена увеличивается
-        animateMoneyUpdate();
-        moneyDisplay.textContent = `$${money}`;
-        upgradeCostDisplay.textContent = `$${clickUpgradeCost}`;
-        clickUpgradeDisplay.textContent = clickUpgradeLevel;
-    } else {
-        alert('Недостаточно средств для прокачки!');
-    }
-});
-
-// Плавное обновление чисел
-function animateMoneyUpdate() {
-    let currentMoney = parseInt(moneyDisplay.textContent.replace('$', ''));
-    const targetMoney = money;
-
-    let interval = setInterval(() => {
-        if (currentMoney < targetMoney) {
-            currentMoney++;
-            moneyDisplay.textContent = `$${currentMoney}`;
-            profileMoneyDisplay.textContent = `$${currentMoney}`;
-        } else {
-            clearInterval(interval);
-        }
-    }, 5);
-}
-
-// Покупка предметов
-const itemsList = document.getElementById('items-list');
-const items = [
-    { name: 'Самолет', cost: 100, description: 'Увеличивает доход на 2' },
-    { name: 'Машина', cost: 50, description: 'Автоматически добавляет $5 каждую секунду' },
-    { name: 'Яхта', cost: 200, description: 'Увеличивает прибыль на $50' },
-    { name: 'Фабрика', cost: 500, description: 'Производит товары, которые увеличивают доход' },
-];
-
-function displayItems() {
-    itemsList.innerHTML = '';
-    items.forEach(item => {
-        const itemElement = document.createElement('div');
-        itemElement.classList.add('item');
-        itemElement.innerHTML = `<p><strong>${item.name}</strong> - Стоимость: $${item.cost}</p><p>${item.description}</p><button onclick="buyItem(${item.cost}, '${item.name}')">Купить</button>`;
-        itemsList.appendChild(itemElement);
-    });
-}
-
-function buyItem(cost, name) {
-    if (money >= cost) {
-        money -= cost;
-        animateMoneyUpdate();
-        moneyDisplay.textContent = `$${money}`;
-        purchasesCount++;
-        document.getElementById('purchases-count').textContent = purchasesCount;
-        alert(`Вы купили ${name}!`);
-    } else {
-        alert('Недостаточно средств!');
-    }
-}
-
-displayItems();
-
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
