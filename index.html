@@ -7,22 +7,31 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Вкладка Кликер -->
+  <!-- Основной контейнер -->
   <div class="container">
     <!-- Карточка сверху -->
     <div class="card">
-      <h2>Ваш заработок</h2>
+      <h2>Кликер денег</h2>
       <p id="money">0 ₽</p>
     </div>
 
     <!-- Кнопка клика -->
-    <button id="click-button">Заработать деньги</button>
+    <button id="click-button" class="main-button">Заработать деньги</button>
 
     <!-- Прокачка -->
     <div class="upgrade">
       <p>Улучшение: <span id="upgrade-level">1 ₽ за клик</span></p>
       <button id="upgrade-button">Улучшить за <span id="upgrade-cost">10 ₽</span></button>
     </div>
+  </div>
+
+  <!-- Вкладки внизу -->
+  <div class="tabs">
+    <button class="tab" data-page="clicker">Кликер</button>
+    <button class="tab" data-page="profile">Профиль</button>
+    <button class="tab" data-page="store">Магазин</button>
+    <button class="tab" data-page="investments">Инвестиции</button>
+    <button class="tab" data-page="business">Бизнес</button>
   </div>
 
   <script src="script.js"></script>
