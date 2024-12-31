@@ -1,7 +1,7 @@
-// Основные данные
-let money = 0; // Количество денег
-let clickValue = 1; // Заработок за клик
-let upgradeCost = 10; // Стоимость прокачки
+// Начальная логика для кликов
+let money = 0;
+let clickValue = 1;
+let upgradeCost = 10;
 
 // DOM-элементы
 const moneyDisplay = document.getElementById("money");
@@ -10,29 +10,37 @@ const upgradeButton = document.getElementById("upgrade-button");
 const upgradeLevel = document.getElementById("upgrade-level");
 const upgradeCostDisplay = document.getElementById("upgrade-cost");
 
-// Функция: Клик
+// Клик
 clickButton.addEventListener("click", () => {
   money += clickValue;
   updateDisplay();
 });
 
-// Функция: Прокачка
+// Улучшение
 upgradeButton.addEventListener("click", () => {
   if (money >= upgradeCost) {
     money -= upgradeCost;
     clickValue++;
-    upgradeCost *= 2; // Увеличиваем стоимость
+    upgradeCost *= 2;
     updateDisplay();
   }
 });
 
-// Функция: Обновление интерфейса
+// Обновление данных
 function updateDisplay() {
   moneyDisplay.textContent = `${money} ₽`;
   upgradeLevel.textContent = `${clickValue} ₽ за клик`;
   upgradeCostDisplay.textContent = `${upgradeCost} ₽`;
-  upgradeButton.disabled = money < upgradeCost;
 }
 
-// Начальное обновление
+// Переключение вкладок
+const tabs = document.querySelectorAll('.tab');
+tabs.forEach(tab => {
+  tab.addEventListener('click', (event) => {
+    const page = event.target.dataset.page;
+    alert(`Перешли на вкладку: ${page}`);
+    // Здесь добавим переключение содержимого позже
+  });
+});
+
 updateDisplay();
